@@ -148,7 +148,7 @@
 
 {#if showSuccess}
   <div class="success-message">
-    ✅ ส่งข้อมูลเรียบร้อยแล้ว
+    ✅ ส่งข้อมูลเรียบร้อยแล้ว ขอบคุณค่ะ!
   </div>
 {/if}
 

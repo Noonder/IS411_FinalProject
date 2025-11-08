@@ -1,5 +1,4 @@
 <script>
-  // @ts-ignore
   import FacilitiesForm from '$lib/components/FacilitiesForm.svelte';
 </script>
 

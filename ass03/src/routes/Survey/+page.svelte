@@ -1,5 +1,4 @@
 <script>
-  // @ts-ignore
   import SurveyHeader from '$lib/SurveyHeader.svelte';
   import SurveyItem from '$lib/SurveyItem.svelte';
   import { aspects } from '$lib/survey.js';

@@ -1,8 +1,6 @@
 <script>
-  // @ts-ignore
   import { onDestroy } from 'svelte';
 
-  // @ts-ignore
   let formData = $state({
     q1: '',
     q2: '',
@@ -14,13 +12,9 @@
     q8: '',
   });
 
-  // @ts-ignore
   let errors = $state({});
-  // @ts-ignore
   let submittedData = $state(null);
-  // @ts-ignore
   let showConfirmModal = $state(false);
-  // @ts-ignore
   let showSuccess = $state(false);
 
   function validate() {
@@ -33,7 +27,6 @@
     return Object.keys(errors).length === 0;
   }
 
-  // @ts-ignore
   function handleSubmit(e) {
     e.preventDefault();
     if (!validate()) return;
@@ -136,7 +129,7 @@
 
 {#if showSuccess}
   <div class="success-message">
-    ✅ ส่งข้อมูลเรียบร้อยแล้ว
+    ✅ ส่งข้อมูลเรียบร้อยแล้ว ขอบคุณค่ะ!
   </div>
 {/if}
 
