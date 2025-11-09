@@ -8,8 +8,9 @@
   <a href="/">home</a>
   <a href="/survey">ประเมิน GAP ด้วยตัวเอง</a>
   <a href="/status">สถานะการยื่นคำขอ</a>
-  <a href="/profile">ข้อมูลส่วนตัว</a>
   <a href="/farmer">Admin</a>
+  <a href="/profile">ข้อมูลส่วนตัว</a>
+  
 
 </nav>
 

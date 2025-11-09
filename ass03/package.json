@@ -4,6 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
+		"devStart": "nodemon server.js",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
@@ -15,9 +16,18 @@
 		"@sveltejs/adapter-auto": "^6.1.0",
 		"@sveltejs/kit": "^2.43.2",
 		"@sveltejs/vite-plugin-svelte": "^6.2.0",
+		"dotenv": "^17.2.3",
+		"nodemon": "^3.1.10",
 		"svelte": "^5.39.5",
 		"svelte-check": "^4.3.2",
 		"typescript": "^5.9.2",
 		"vite": "^7.1.7"
+	},
+	"dependencies": {
+		"bcrypt": "^6.0.0",
+		"better-sqlite3": "^12.4.1",
+		"cors": "^2.8.5",
+		"ejs": "^3.1.10",
+		"express": "^5.1.0"
 	}
 }

@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
   // mock data จำลองข้อมูลผู้ใช้
   let data = {
     personal: {
@@ -61,9 +63,11 @@
     }
   };
 
+  // @ts-ignore
   let editingSection = null;
   let tempData = {};
 
+  // @ts-ignore
   function startEdit(section) {
     editingSection = section;
     tempData = JSON.parse(JSON.stringify(data[section])); // clone
