@@ -1,7 +1,6 @@
 <script>
-// @ts-nocheck
+  import { goto } from '$app/navigation';
 
-  // mock data จำลองข้อมูลผู้ใช้
   let data = {
     personal: {
       user_type: 'เกษตรกร',
@@ -32,7 +31,6 @@
     }
   };
 
-  // 🏷️ labels ภาษาไทยของแต่ละฟิลด์
   const labels = {
     personal: {
       user_type: 'ประเภทผู้ใช้',
@@ -62,175 +60,94 @@
       titledeed_file: 'ไฟล์แนบ'
     }
   };
-
-  // @ts-ignore
-  let editingSection = null;
-  let tempData = {};
-
-  // @ts-ignore
-  function startEdit(section) {
-    editingSection = section;
-    tempData = JSON.parse(JSON.stringify(data[section])); // clone
-  }
-
-
-  // ตัวเลือกคำนำหน้า
-  const prefixes = ['นาย', 'นาง', 'นางสาว'];
 </script>
 
-  <h1>บัญชีผู้ใช้</h1>
+<h1>บัญชีผู้ใช้</h1>
 
-  <!-- ข้อมูลส่วนตัว -->
-  <form class="profile">
-    <fieldset class="card">
-      <legend>
-        ข้อมูลส่วนตัว
-        {#if editingSection === 'personal'}
-          <button type="button" on:click>💾</button>
-          <button type="button" on:click>❌</button>
+<!-- ข้อมูลส่วนตัว -->
+<form class="profile">
+  <fieldset class="card">
+    <legend>
+      ข้อมูลส่วนตัว
+      <button type="button" on:click={() => goto('/profile/personal')}>✏️</button>
+    </legend>
+
+    {#each Object.entries(data.personal) as [key, value]}
+      <div class="field">
+        <label>{labels.personal[key]}</label>
+
+        {#if key === 'idcard_file'}
+          {#if value}
+            <a href={value} target="_blank">ดูไฟล์</a>
+          {:else}
+            <span>-</span>
+          {/if}
         {:else}
-          <button type="button" on:click={() => startEdit('personal')}>✏️</button>
+          <span class="value">{value}</span>
         {/if}
-      </legend>
+      </div>
+    {/each}
+  </fieldset>
+</form>
 
-      {#each Object.entries(data.personal) as [key, value]}
-        <div class="field">
-          <!-- svelte-ignore a11y_label_has_associated_control -->
-          <label>{labels.personal[key]}</label>
+<!-- ข้อมูลทุเรียน -->
+<form class="profile">
+  <fieldset class="card">
+    <legend>
+      ข้อมูลทุเรียน
+      <button type="button" on:click={() => goto('/profile/durian')}>✏️</button>
+    </legend>
 
-          {#if editingSection === 'personal'}
-            {#if key === 'prefix'}
-              <select bind:value={tempData[key]}>
-                {#each prefixes as p}
-                  <option value={p}>{p}</option>
-                {/each}
-              </select>
+    {#each Object.entries(data.durian) as [key, value]}
+      <div class="field">
+        <label>{labels.durian[key]}</label>
+        <span class="value">{value}</span>
+      </div>
+    {/each}
+  </fieldset>
+</form>
 
-            {:else if key === 'birthday'}
-              <input type="date" bind:value={tempData[key]} />
+<!-- ข้อมูลแปลงเพาะปลูก -->
+<form class="profile">
+  <fieldset class="card">
+    <legend>
+      ข้อมูลแปลงเพาะปลูก
+      <button type="button" on:click={() => goto('/profile/farm')}>✏️</button>
+    </legend>
 
-            {:else if key === 'idcard_file'}
-              <input type="file" on:change={(e) => tempData[key] = e.target.files[0]?.name} />
+    {#each Object.entries(data.farm) as [key, value]}
+      <div class="field">
+        <label>{labels.farm[key]}</label>
+        <a href={value} target="_blank" class="map-link">{value}</a>
+      </div>
+    {/each}
+  </fieldset>
+</form>
 
-            {:else}
-              <input bind:value={tempData[key]} />
-            {/if}
+<!-- หลักฐานการใช้ที่ดิน -->
+<form class="profile">
+  <fieldset class="card">
+    <legend>
+      หลักฐานการใช้ที่ดิน
+      <button type="button" on:click={() => goto('/profile/titledeed')}>✏️</button>
+    </legend>
+
+    {#each Object.entries(data.titledeed) as [key, value]}
+      <div class="field">
+        <label>{labels.titledeed[key]}</label>
+        {#if key === 'titledeed_file'}
+          {#if value}
+            <a href={value} target="_blank">ดูไฟล์</a>
           {:else}
-            {#if key === 'idcard_file'}
-              {#if value}
-                <a href={value} target="_blank">ดูไฟล์</a>
-              {:else}
-                <span>-</span>
-              {/if}
-            {:else}
-              <input type="text" value={value} readonly />
-            {/if}
+            <span>-</span>
           {/if}
-        </div>
-      {/each}
-    </fieldset>
-  </form>
-
-  <!-- ข้อมูลพันธุ์ทุเรียน -->
-  <form class="profile">
-    <fieldset class="card">
-      <legend>
-        ข้อมูลทุเรียน
-        {#if editingSection === 'durian'}
-          <button type="button" on:click>💾</button>
-          <button type="button" on:click>❌</button>
         {:else}
-          <button type="button" on:click={() => startEdit('durian')}>✏️</button>
+          <span class="value">{value}</span>
         {/if}
-      </legend>
-
-      {#each Object.entries(data.durian) as [key, value]}
-        <div class="field">
-          <!-- svelte-ignore a11y_label_has_associated_control -->
-          <label>{labels.durian[key]}</label>
-          {#if editingSection === 'durian'}
-            {#if key === 'flowering_startdate'}
-              <input type="date" bind:value={tempData[key]} />
-            {:else}
-              <input bind:value={tempData[key]} />
-            {/if}
-          {:else}
-            <input type="text" value={value} readonly />
-          {/if}
-        </div>
-      {/each}
-    </fieldset>
-  </form>
-
-    <!-- ข้อมูลแปลงเพาะปลูก -->
-    <form class="profile">
-      <fieldset class="card">
-        <legend>
-          ข้อมูลแปลงเพาะปลูก
-          {#if editingSection === 'farm'}
-            <button type="button" on:click>💾</button>
-            <button type="button" on:click>❌</button>
-          {:else}
-            <button type="button" on:click={() => startEdit('farm')}>✏️</button>
-          {/if}
-        </legend>
-
-        {#each Object.entries(data.farm) as [key, value]}
-          <div class="field">
-            <!-- svelte-ignore a11y_label_has_associated_control -->
-            <label>{labels.farm[key]}</label>
-
-            {#if editingSection === 'farm'}
-              <input bind:value={tempData[key]} placeholder="ใส่ลิงก์ Google Maps" />
-            {:else}
-              <a href={value} target="_blank" class="map-link">เปิดแผนที่</a>
-            {/if}
-          </div>
-        {/each}
-      </fieldset>
-    </form>
-
-
-  <!-- หลักฐานการใช้ที่ดิน -->
-  <form class="profile">
-    <fieldset class="card">
-      <legend>
-        หลักฐานการใช้ที่ดิน
-        {#if editingSection === 'landDoc'}
-          <button type="button" on:click>💾</button>
-          <button type="button" on:click>❌</button>
-        {:else}
-          <button type="button" on:click={() => startEdit('titledeed')}>✏️</button>
-        {/if}
-      </legend>
-
-      {#each Object.entries(data.titledeed) as [key, value]}
-        <div class="field">
-          <!-- svelte-ignore a11y_label_has_associated_control -->
-          <label>{labels.titledeed[key]}</label>
-
-          {#if editingSection === 'titledeed'}
-            {#if key === 'titledeed_file'}
-              <input type="file" on:change={(e) => tempData[key] = e.target.files[0]?.name} />
-            {:else}
-              <input bind:value={tempData[key]} />
-            {/if}
-          {:else}
-            {#if key === 'titledeed_file'}
-              {#if value}
-                <a href={value} target="_blank">ดูไฟล์</a>
-              {:else}
-                <span>-</span>
-              {/if}
-            {:else}
-              <input type="text" value={value} readonly />
-            {/if}
-          {/if}
-        </div>
-      {/each}
-    </fieldset>
-  </form>
-
+      </div>
+    {/each}
+  </fieldset>
+</form>
 
 <style>
   .profile {
@@ -275,7 +192,7 @@
     color: #374151;
   }
 
-  input[readonly] {
+  .value {
     background-color: #f3f4f6;
     border: 1px solid #d1d5db;
     border-radius: 6px;
@@ -283,12 +200,6 @@
     flex: 1;
   }
 
-  input, select {
-    flex: 1;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    padding: 6px;
-  }
 
   button {
     padding: 6px 10px;

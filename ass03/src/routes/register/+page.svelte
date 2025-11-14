@@ -1,115 +1,109 @@
 <script>
-// @ts-nocheck
-import { enhance } from '$app/forms';
+  import { goto } from '$app/navigation';
 
-let registerForm = {
-  userType: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-  prefix: '',
-  firstname: '',
-  lastname: '',
-  idcard: '',
-  phone: '',
-  durianOther: ''
-};
+  let step = 1;
 
-let durianType = '';
-let errors = {};
-const prefixes = ['นาย', 'นาง', 'นางสาว'];
+  let registerForm = {
+    userType: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    prefix: '',
+    firstname: '',
+    lastname: '',
+    idcard: '',
+    phone: '',
+    durianOther: ''
+  };
 
-// Validation Step1
-function validateStep1() {
-  errors = {};
-  if (!registerForm.userType) errors.userType = "*โปรดเลือกประเภทผู้ใช้งาน";
-  if (!registerForm.email) errors.email = "*โปรดกรอกอีเมล";
-  if (!registerForm.password) errors.password = "*โปรดกรอกรหัสผ่าน";
-  if (registerForm.password !== registerForm.confirmPassword) errors.confirmPassword = "*รหัสผ่านไม่ตรงกัน";
-  if (!registerForm.firstname) errors.firstname = "*โปรดกรอกชื่อ";
-  if (!registerForm.lastname) errors.lastname = "*โปรดกรอกนามสกุล";
-  if (!registerForm.idcard || !/^\d{13}$/.test(registerForm.idcard)) errors.idcard = "*กรุณากรอกเลขบัตร 13 หลัก";
-  if (!registerForm.phone || !/^\d{10}$/.test(registerForm.phone)) errors.phone = "*กรุณากรอกเบอร์โทร";
-  return Object.keys(errors).length === 0;
-}
+   let durianType = '';
 
-// Validation Step2
-function validateStep2() {
-  errors = {};
-  if (!durianType) errors.durianType = "*โปรดเลือกพันธุ์ทุเรียน";
-  if (durianType === 'อื่นๆ' && !registerForm.durianOther.trim()) errors.durianOther = "โปรดระบุพันธุ์อื่นๆ";
-  return Object.keys(errors).length === 0;
-}
+  let errors = {};
+  const prefixes = ['นาย', 'นาง', 'นางสาว'];
 
-// Handle Step1 Submit
-function handleStep1({ result }) {
-  if (result.type === 'success') {
-    alert('Step 1 สำเร็จ! ไปขั้นตอนต่อไป');
-  } else {
-    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล Step1');
+  function validateStep1() {
+    errors = {};
+    if (!registerForm.userType) errors.userType = "*โปรดเลือกประเภทผู้ใช้งาน";
+    if (!registerForm.email) errors.email = "*โปรดกรอกอีเมล";
+    if (!registerForm.password) errors.password = "*โปรดกรอกรหัสผ่าน";
+    if (registerForm.password !== registerForm.confirmPassword) errors.confirmPassword = "*รหัสผ่านไม่ตรงกัน";
+    if (!registerForm.firstname) errors.firstname = "*โปรดกรอกชื่อ";
+    if (!registerForm.idcard || !/^\d{13}$/.test(registerForm.idcard)) errors.idcard = "*กรุณากรอกเลขบัตร 13 หลัก";
+    if (!registerForm.phone || !/^\d{10}$/.test(registerForm.phone)) errors.phone = "*กรุณากรอกเบอร์โทร";
+    return Object.keys(errors).length === 0;
   }
-}
 
-// Handle Step2 Submit
-function handleStep2({ result }) {
-  if (result.type === 'success') {
-    alert('สมัครสมาชิกสำเร็จ!');
-    window.location.href = '/login';
-  } else {
-    alert('เกิดข้อผิดพลาดในการสมัครสมาชิก Step2');
+  function validateStep2() {
+    errors = {};
+    if (!durianType) errors.durianType = "*โปรดเลือกพันธุ์ทุเรียน";
+    if (durianType === 'อื่นๆ' && !registerForm.durianOther.trim()) errors.durianOther = "โปรดระบุพันธุ์อื่นๆ";
+    return Object.keys(errors).length === 0;
   }
-}
+
+  function nextStep() {
+    if (step === 1 && !validateStep1()) return;
+    step++;
+  }
+
+  function prevStep() {
+    step--;
+  }
+
+  function submitForm() {
+    if (!validateStep2()) return;
+    goto('/profile');
+  }
 </script>
 
-<!-- Step 1 Form -->
-<form method="POST" use:enhance={{ result: handleStep1 }} class="register">
+<form class="register">
   <h1>ลงทะเบียนบัญชีผู้ใช้</h1>
+
+  {#if step === 1}
   <div class="card">
     <h2>ข้อมูลส่วนตัว</h2>
 
+   <div class="field">
+  <label>ประเภทผู้ใช้</label>
+  {#if errors.userType}<div class="error">{errors.userType}</div>{/if}
+  <div class="user-type">
+    <button 
+      type="button" 
+      class="option {registerForm.userType==='เกษตรกร'?'active':''}" 
+      on:click={() => registerForm.userType='เกษตรกร'}>
+      <span>เกษตรกร</span>
+    </button>
+
+    <button 
+      type="button" 
+      class="option {registerForm.userType==='นิติบุคคล'?'active':''}" 
+      on:click={() => registerForm.userType='นิติบุคคล'}>
+      <span>นิติบุคคล</span>
+    </button>
+  </div>
+</div>
+
+
     <div class="field">
-      <!-- svelte-ignore a11y_label_has_associated_control -->
-      <label>ประเภทผู้ใช้</label>
-      <div class="input-wrapper">
-        <div class="user-type">
-        <button type="button" class="option {registerForm.userType==='เกษตรกร'?'active':''}" on:click={() => registerForm.userType='เกษตรกร'}>เกษตรกร</button>
-        <button type="button" class="option {registerForm.userType==='นิติบุคคล'?'active':''}" on:click={() => registerForm.userType='นิติบุคคล'}>นิติบุคคล</button>
-        </div>
-        {#if errors.userType}<div class="error">{errors.userType}</div>{/if}
-      </div>
-    </div>
-    
-    <div class="field">
-      <!-- svelte-ignore a11y_label_has_associated_control -->
       <label>อีเมล</label>
-      <div class="input-wrapper">
-        <input type="email" name="email" bind:value={registerForm.email} />
-        {#if errors.email}<div class="error">{errors.email}</div>{/if}
-      </div>
+      {#if errors.email}<div class="error">{errors.email}</div>{/if}
+      <input type="email" bind:value={registerForm.email} />
     </div>
 
     <div class="field">
-      <!-- svelte-ignore a11y_label_has_associated_control -->
       <label>รหัสผ่าน</label>
-      <div class="input-wrapper">
-        <input type="password" name="password" bind:value={registerForm.password} />
-        {#if errors.password}<div class="error">{errors.password}</div>{/if}
-      </div>
+      {#if errors.password}<div class="error">{errors.password}</div>{/if}
+      <input type="password" bind:value={registerForm.password} />
     </div>
 
     <div class="field">
-      <!-- svelte-ignore a11y_label_has_associated_control -->
       <label>ยืนยันรหัสผ่าน</label>
-      <div class="input-wrapper">
-        <input type="password" name="confirmPassword" bind:value={registerForm.confirmPassword} />
-        {#if errors.confirmPassword}<div class="error">{errors.confirmPassword}</div>{/if}
-      </div>
+      {#if errors.confirmPassword}<div class="error">{errors.confirmPassword}</div>{/if}
+      <input type="password" bind:value={registerForm.confirmPassword} />
     </div>
 
-    <!-- svelte-ignore a11y_label_has_associated_control -->
     <div class="field">
       <label>คำนำหน้า</label>
-      <select name="prefix" bind:value={registerForm.prefix}>
+      <select bind:value={registerForm.prefix}>
         <option value="">-- เลือก --</option>
         {#each prefixes as p}
           <option value={p}>{p}</option>
@@ -118,102 +112,70 @@ function handleStep2({ result }) {
     </div>
 
     <div class="field">
-      <!-- svelte-ignore a11y_label_has_associated_control -->
       <label>ชื่อ</label>
-      <div class="input-wrapper">
-        <input type="text" name="firstname" bind:value={registerForm.firstname} />
-        {#if errors.firstname}<div class="error">{errors.firstname}</div>{/if}
-      </div>
+      {#if errors.firstname}<div class="error">{errors.firstname}</div>{/if}
+      <input type="text" bind:value={registerForm.firstname} />
     </div>
 
     <div class="field">
-      <!-- svelte-ignore a11y_label_has_associated_control -->
       <label>นามสกุล</label>
-      <div class="input-wrapper">
-        <input type="text" name="lastname" bind:value={registerForm.lastname} />
-        {#if errors.lastname}<div class="error">{errors.lastname}</div>{/if}
-      </div>
+      <input type="text" bind:value={registerForm.lastname} />
     </div>
 
     <div class="field">
-      <!-- svelte-ignore a11y_label_has_associated_control -->
       <label>หมายเลขบัตรประชาชน</label>
-      <div class="input-wrapper">
-        <input type="text" name="idcard" maxlength="13" bind:value={registerForm.idcard} />
-        {#if errors.idcard}<div class="error">{errors.idcard}</div>{/if}
-      </div>
+      {#if errors.idcard}<div class="error">{errors.idcard}</div>{/if}
+      <input type="text" maxlength="13" bind:value={registerForm.idcard} />
     </div>
 
     <div class="field">
-      <!-- svelte-ignore a11y_label_has_associated_control -->
       <label>เบอร์โทรศัพท์</label>
-      <div class="input-wrapper">
-        <input type="text" name="phone" bind:value={registerForm.phone} />
-        {#if errors.phone}<div class="error">{errors.phone}</div>{/if}
-      </div>
-
+      {#if errors.phone}<div class="error">{errors.phone}</div>{/if}
+      <input type="text" bind:value={registerForm.phone} />
     </div>
 
     <div class="btn-group">
-      <button type="submit" on:click={(e) => { if(!validateStep1()) e.preventDefault(); }}>ส่งข้อมูล</button>
+      <button type="button" class="btn next" on:click={nextStep}>ถัดไป</button>
     </div>
   </div>
-</form>
+  {/if}
 
-<!-- Step 2 Form -->
-<form method="POST" use:enhance={{ result: handleStep2 }} class="register">
+  {#if step === 2}
   <div class="card">
-  <h2>ระบุพันธุ์ทุเรียน</h2>
-    <div class="radio-group">
-      {#each ['หมอนทอง','ก้านยาว','ชะนี','หลงลับแล','กระดุมทอง','พวงมณี','อื่นๆ'] as type}
-        <label class="radio">
-          <input type="radio" bind:group={durianType} value={type} />
-          <span>{type}</span>
-        </label>
-      {/each}
-    </div>
+    <h2>ข้อมูลพันธุ์ทุเรียน</h2>
 
-    {#if errors.durianType}
-      <div class="error">{errors.durianType}</div>
-    {/if}
+    {#each ['หมอนทอง','ก้านยาว','ชะนี','หลงลับแล','กระดุมทอง','พวงมณี','อื่นๆ'] as type}
+      <label class="radio">
+        <input type="radio" bind:group={durianType} value={type} />
+        <span>{type}</span>
+      </label>
+    {/each}
+    {#if errors.durianType}<div class="error">{errors.durianType}</div>{/if}
 
-    {#if durianType === 'อื่นๆ'}
+    {#if durianType==='อื่นๆ'}
       <div class="field">
-        <!-- svelte-ignore a11y_label_has_associated_control -->
         <label>ระบุพันธุ์อื่นๆ</label>
         <input type="text" bind:value={registerForm.durianOther} />
-        {#if errors.durianOther}
-          <div class="error">{errors.durianOther}</div>
-        {/if}
+        {#if errors.durianOther}<div class="error">{errors.durianOther}</div>{/if}
       </div>
     {/if}
 
     <div class="btn-group">
-      <button type="submit" on:click={(e) => { if (!validateStep2()) e.preventDefault(); }}>
-        ยืนยัน
-      </button>
+      <button type="button" class="btn back" on:click={prevStep}>ย้อนกลับ</button>
+      <button type="button" class="btn next" on:click={submitForm}>ยืนยัน</button>
     </div>
   </div>
+  {/if}
 </form>
 
 <style>
 .register {
   font-family: 'Prompt', sans-serif;
-  max-width: 600px;
-  margin: 20px auto;
+  margin: 0 auto;
 }
 
 h1 {
   color: #010b05;
-  margin-bottom: 16px;
-  text-align: center;
-  font-size: 1.8rem;
-}
-
-h2 {
-  font-weight: 700;
-  font-size: 1.4rem;
-  color: #14532d;
   margin-bottom: 16px;
 }
 
@@ -225,15 +187,22 @@ h2 {
   margin-bottom: 20px;
 }
 
+h2 {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #14532d;
+  margin-bottom: 12px;
+}
+
 .field {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
 label {
-  width: 180px;
+  width: 220px;
   font-weight: 600;
   color: #374151;
 }
@@ -242,29 +211,35 @@ input, select {
   flex: 1;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  padding: 8px 10px;
-  font-size: 1rem;
+  padding: 6px;
 }
 
 button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f1f6f3;
+    color: #140e0e;
+    cursor: pointer;
+    font-weight: 600;
+}
+button.next {
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
-  background-color: #f1f6f3;
-  color: #140e0e;
+  background-color: #166534;
+  color: #fff;
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.2s;
 }
 
-button:hover {
-  background-color: #e0ebdf;
+button.back {
+  background-color: #9ca3af;
 }
 
 .btn-group {
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+  justify-content: space-between;
   margin-top: 16px;
 }
 
@@ -285,37 +260,18 @@ button:hover {
   border: 2px solid transparent;
   border-radius: 8px;
   cursor: pointer;
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120px;
   text-align: center;
-  transition: all 0.2s;
 }
+
 
 .option.active {
   border-color: #18763b;
-  background-color: #8cb6a1;
+  background: #8cb6a1;
 }
 
-.radio-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
 
-.radio {
-  display: flex;
-  align-items: center;
-  background: #f3f3f3;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.radio input {
-  margin-right: 6px;
-}
-
-.radio:hover {
-  background: #e2e2e2;
-}
 </style>
